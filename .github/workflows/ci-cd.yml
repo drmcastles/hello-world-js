@@ -36,3 +36,16 @@ jobs:
         git config --global user.email "github-actions@github.com"
         npm run build  # Собираем проект (если есть процесс сборки)
         gh-pages -d .  # Деплой на GitHub Pages
+  test:
+      runs-on: ubuntu-latest
+      needs: build  # Этот джоб будет выполняться только после успешного завершения джоба build
+      steps:
+    - name: Run tests
+        run: npm test
+
+  deploy:
+      runs-on: ubuntu-latest
+      needs: test   # Этот джоб будет выполняться только после успешного завершения джоба test
+      steps:
+      - name: Deploy to GitHub Pages
+        run: gh-pages -d .
