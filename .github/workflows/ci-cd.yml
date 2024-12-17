@@ -1,0 +1,38 @@
+name: CI/CD Pipeline
+
+# Триггер на push и pull_request
+on:
+  push:
+    branches:
+      - main  # Запускать на пуш в главную ветку
+  pull_request:
+    branches:
+      - main  # Запускать при создании pull request в главную ветку
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # Используем Ubuntu для работы пайплайна
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3  # Клонируем репозиторий
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'  # Устанавливаем Node.js версии 16
+
+    - name: Install dependencies
+      run: npm install  # Устанавливаем зависимости (в данном случае их нет, но на будущее)
+
+    - name: Run tests
+      run: npm test  # Запускаем тесты (в данном случае просто выводим сообщение)
+
+    - name: Deploy to GitHub Pages
+      if: github.ref == 'refs/heads/main'  # Деплой только с ветки main
+      run: |
+        npm install -g gh-pages  # Устанавливаем gh-pages для деплоя
+        git config --global user.name "GitHub Actions"
+        git config --global user.email "github-actions@github.com"
+        npm run build  # Собираем проект (если есть процесс сборки)
+        gh-pages -d .  # Деплой на GitHub Pages
